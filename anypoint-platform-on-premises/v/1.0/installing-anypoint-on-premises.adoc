@@ -45,6 +45,15 @@ You need to have Docker version 1.8.x. Docker 1.9.X isn't currently compatible w
 
 Follow the docker installation instructions that are appropriate for your system.   https://docs.docker.com/installation/
 
+=== Dowload Script Bundle
+
+Depending on what you wish to install, download one of the following two bundles of configuration files and scripts:
+
+* link:_attachments/anypoint-platform.zip[Anypoint Platform On Premsies]: For installing the entire functionality of the Anypoint Platform, including API administration tools.
+* link:_attachments/anypoint-runtime-manager.zip[Anypoint Runtime Manager On Premsies]: For installing the reduced verison of the Anypoint Platform, limited only to the Runtime Manager, which manages your deployed applications.
+
+These .zip files contain all of the configuration and installation scripts needed to run Anypoint Platform or Anypoint Runtime Management.
+
 === Architecture of Anypoint Platform on Docker
 
 [TIP]
@@ -133,7 +142,7 @@ Run the rancher server on the machine you designate to host it.  It occupies a s
 
 After a few minutes, the server will be running and will allow you to access the UI on your browser of choice vía HTTP:  `http://$SERVER_IP:9999`
 
-image:
+image:rancher-welcome.png[rancher welcome]
 
 You now have the server up and running with the Rancher UI. From here onwards, this tutorial will make use of the Rancher UI instead of the terminal to manage the installation.
 
@@ -143,17 +152,17 @@ Follow the Docker instructions above on a separate machine. This machine will be
 
 Back on the first machine, where you installed Rancher, from the UI top nav bar click on *INFRASTRUCTURE* and then *HOSTS*.  You will see a screen that shows all registered host machines. At this point, you won’t see any registered machines.
 
-image
+image:add-host.png[add host]
 
 Click on the ADD HOST button to add a host. On the next page, the Rancher UI will require that you provide a base URL that the hosts should use to connect to the server.  By default it will use the URL that your browser is currently at, which should be fine, so hit *Save* to move on to the next page.
 
-image
+image:add-host2.png[add host2]
 
 There are several ways to auto-provision hosts from different cloud providers.  We will not use any of these since you have already provisioned your own server. Click on the CUSTOM icon which will give you a command to run on the host machine. Copy and paste this into your terminal to register the host with the server (this will run the Rancher agent Docker image on the host machine).  Click on *close*. Wait for a minute and go back to the host's screen and you will see that the host has been registered with the server and that it’s ready to receive commands.
 
-image
+image:add-host3.png[add host 3]
 
-image
+image:add-host4.png[add host 4]
 
 One of the hosts you are adding to your cluster needs to be designated as the “database” host, which will ensure correct container placement for failover scenarios. Pick your designated host and open its dropdown menu by clicking on the down arrow, select “Edit” and add the following label:
 
@@ -162,18 +171,18 @@ One of the hosts you are adding to your cluster needs to be designated as the �
 “database” = “true”
 ----
 
-image
+image:rancher-assign-db1.png[assign db]
 
-image
+image:rancher-assign-db2.png[assign db2]
 
 You can verify that the host now displays this label when viewed on the Hosts screen.
 
 [NOTE]
 Make sure that exactly *one* single host has this label attached.
 
-image
+image:rancher-assign-db-confirm.png[confirm active]
 
-== Docker Registry Setup
+=== Docker Registry Setup
 
 ////
 Although docker registries can be manually added on every host which is managed by Rancher, it’s better to add “docker.mulesoft.com” to the platform to make sure this registry exists on all nodes under Rancher control.  This way Rancher will be able to pull MuleSoft images by itself on any host without user intervention.
@@ -201,9 +210,9 @@ To add docker registries on every host, login in each host and pull the MuleSoft
 We use our own internal docker registry. To download these images you will need to have the appropriate permissions added to your Anypoint account.  If you do not already have these, for now you can add your Anypoint username to link:https://docs.google.com/a/mulesoft.com/spreadsheets/d/1IH67o7XmNY9PDjySqYo5ie8GIbLVdaygKRs3NvdV35Y/edit?usp=sharing[this spreadsheet] along with the list of permissions that you need (download ARM or download full platform or both).  You will be notified when you have been given access.
 ====
 
-=== OPTIONAL: Regenerate certificates, keys and keystores in the platform config
+==== OPTIONAL: Regenerate certificates, keys and keystores in the platform config
 
-Included with the platform installation and configuration zip package (or github repo) is a default sent of encryption keys, self-signed certificates, and keystores that are used by the platform for security purposes such as signing certificates during mule/gateway runtime registration with the runtime manager.  Out of the box, the platform works fine using these default files, but if you wish to replace them with newly generated ones for increased security we have included a script to automate this process.
+Included with both zip files available for download in this document, there's a default sent of encryption keys, self-signed certificates, and keystores that are used by the platform for security purposes such as signing certificates during mule/gateway runtime registration with the runtime manager.  Out of the box, the platform works fine using these default files, but if you wish to replace them with newly generated ones for increased security we have included a script to automate this process.
 
 [source]
 ----
@@ -214,7 +223,7 @@ Included with the platform installation and configuration zip package (or github
 Follow the on-screen prompts.  Notice that once executed a new file will be generated from this process named `truststore.jks)`.  This file is required by link:/mule-agent/v/1.1.1/index[the Mule Agent] for all runtimes you wish to register to the console because the agent uses 2-way SSL validation.  Before registering a runtime, you must copy this file to the `conf/` folder of that runtime.
 
 
-=== Copy platform config files to `/opt/config`
+==== Copy platform config files to `/opt/config`
 
 The Anypoint platform configuration files must be in a predictable location on each host machine because Rancher dynamically launches services on any available host.  This means that it won’t have the benefit of finding config files from a current working directory the same way docker-compose would.  `/opt/config` has been chosen as the default directory to store platform configuration files, so what you need to do is download the link:[I STILL NEED THE FILE TO PUT HERE] and copy the config directory into the `/opt` folder.  Repeat this procedure on every host you register to Rancher.
 
@@ -243,7 +252,7 @@ for i in /opt/dbs/objectstore /opt/dbs/auth /opt/dbs/apiplatform /opt/dbs/hybrid
 
 The Anypoint platform creates a load balancer which makes SSL termination. By default, the Rancher  configuration files rely on an existing SSL certificate named “mulesoft-demo”. To upload its key and certificate, on Rancher open INFRASTRUCTURE -> CERTIFICATES and click the *Add Certificate* button. Then upload or insert the key and certificates.
 
-image
+image:rancher-add-certificate.png[add certificate]
 
 [NOTE]
 ====
@@ -258,15 +267,473 @@ nginx-ssl-lb:
 
 ====
 
-image
+image:rancher-add-certificate2.png[add certificate]
 
-== Run the platform via the Rancher UI
+=== Run the platform via the Rancher UI
 
 There are two ways of running the platform using Rancher. One of them is to use a command-line utility called `rancher-compose` (that is very similar to `docker-compose`, in case you have used it before).  This method works, but requires more steps and is more error-prone than the alternative. We recommend the second way of launching the platform, which relies entirely on the Rancher UI.  To start, click on the *Applications* link on the top nav bar and then click the *Add Stack* button.
 
-image
+image:rancher-add-stack.png[add stack]
 
-Give the newly created stack a name (as a suggestion, name it `anypoint-platform`) and load the `docker-compose.yml` and `rancher-compose.yml` files you obtained from the zip (or github repo).  It’s the equivalent of “rancher-compose create” command.
+Give the newly created stack a name (as a suggestion, name it `anypoint-platform`) and load the `docker-compose.yml` and `rancher-compose.yml` files available as part of either of the two .zip bundles attached at the start of this document.  It’s the equivalent of “rancher-compose create” command.
+
+image:rancher-add-stack2.png[add stack 2]
+
+After you do this, you can go back to the Stacks screen and you’ll be able to see all the images of the Anypoint Platform created under the stack name that you used.  These images are not running yet, but the stack has been created with the information you provided.  To run the platform, click on the *Options* icon for the stack and then select *Start Services*.
+
+image:rancher-start-services.png[start services]
+
+It will take several minutes for the services to come online.  The icons will slowly turn green as the services start and become ready.
+
+image:rancher-start-services2.png[start services 2]
+
+Once the images are all active, your Stacks screen will look like in the image below:
+
+image:rancher-start-services3.png[start services 3]
+
+=== Migrate and Seed databases
+
+Now that all the services are up and running, you can run the migration and seed the authentication, object-store, and api-platform DBs.  There are two ways to do this:
+
+. The easiest way is running the `seed-database.sh` script, available in both of the two bundle .zip files that you can download. This script runs all 3 migrations in sequence.
++
+[NOTE]
+This script will only work if all the services are running on 1 host.
+
+. If the services are running on different hosts, then you should use the manual method described below.
+
+==== Using seed-database.sh
+
+In both .zip bundle files, there is a file named `seed-database.sh`.  Copy this file to the host machine running all the services and run it from the terminal.  It performs all necessary migrations in sequence.
+
+==== Manual database migration and seeding
+
+Rancher makes it easy to open a terminal window to any container via the UI, you can do that to execute the migration commands manually.
+
+. Among your active services, find the *authentication* service.  Mouse over the running container and click the icon for the drop down menu.  Then click on *Execute Shell* to open a terminal inside the container.
+
++
+image:rancher-execute-shell.png[execute shell]
+
+. In the terminal window, run the following command to migrate and seed the database.  It will notify you when it’s done and report any errors.
++
+[source]
+----
+> npm run grunt -- seedprem
+----
++
+image:rancher-shell1.png[shell1]
+
++
+image:rancher-shell2.png[shell2]
+
+. Repeat these steps with the *objectstore* service, but this time run the following command instead:
+
++
+[source]
+----
+> npm run knex -- migrate:latest
+----
+
++
+image:rancher-shell3.png[shell3]
+
++
+. Repeat the same steps with the *api-platform* service and run the same command as you did with the objectstore service:
+
++
+[source]
+----
+> npm run knex -- migrate:latest
+----
+
+. Repeat the same steps with the *exchange* service and run the same command as you did with the objectstore service:
+
++
+[source]
+----
+> npm run gulp -- migrate-latest
+----
+
+Congratulations! You have now installed the Anypoint Platform running on top of Docker. You can open the service using your browser (make sure to use HTTPS) and create an organization by going to https://$HOST-IP/accounts/#/setup
+
+=== Extending to more than 1 host
+
+Rancher allows you to distribute containers between multiple hosts and make it absolutely transparent for clients. Scaling is quite simple:
+. Make sure that you have more than 1 host for your infrastructure - you can see an example below. You can view this by accessing *Infrastructure* -> *Hosts*
+
++
+image:rancher-multi-host.png[multi host]
+
++
+[NOTE]
+If you have only one host, scaling is still technically possible, but not very practical.
+
+. Make sure that all configuration files for the platform exist on all hosts. You can either copy them, or preferably put on NAS and mount the share into the `/opt` folder on all hosts.
+. Go to *Applications* -> *Stacks* and choose the service you want to scale.
+
++
+[NOTE]
+====
+Currently not all services can be scaled. Below is a list of services you can easily multiply:
+
+* apiplatform
+* authentication
+* nginx
+====
+
+. If  you need to scale the “authentication” service, as an example, you can either
+
++
+* click on its “Scale Up” button:
+
++
+image:rancher-scal-service.png[scale service]
+
+* Or access its `Edit` menu:
+
++
+image:rancher-scal-service2.png[scale service 2]
+
+. Then use the slider to specify how many instances of the service you need:
+
++
+image:rancher-scal-service3.png[scale service 3]
+
+. From the remaining list of eligible hosts, the container will be scheduled on to the one with the least number of containers on it.
+
+=== SSL termination on an external device:
+
+If you want to make SSL encryption for Anypoint Platform traffic on an external device and don’t need an HTTPS entry point (`nginx-ssl-lb` - a default SSL load balancer) you can create an additional load balancer without SSL encryption.
+
+. On Rancher open *APPLICATION* -> *STACK* and click the `Add Stack` button
+
++
+image:rancher-applications-add-stack.png[add stack]
+
+. Type name for this stack, for instance “ExternalSSL” and click *Create*
+
++
+image:rancher-application-add-stack2.png[add stack]
+
+. Click on the right part of *Add Service* menu and select *Add Load Balancer*
+
++
+image:rancher-application-add-stack3.png[add stack3]
+
+. Configure it for plain HTTP load balancing, like in the following example:
++
+[width="100%",cols="50a,50a",options="header"]
+|===
+|*Scale* | Always run one instance of this container on every host (* recommended option)
+|*Name* | http-lb
+|*Description* | plain http load balancer for Anypoint Platform (* optional)
+|*Source Port* | 80
+|*Protocol* | tcp
+|*Default Target Port* | 80
+|*Access* | Public
+|*Target Service* | nginx
+|===
+
+. then click *Save*
++
+image:rancher-add-load-balancer.png[load balancer]
+
+. Verify that the service is active (it may take a few minutes)
+
++
+image:rancher-add-load-balancer2.png[load balancer]
+
+== Hybrid Server Registration
+
+Add a server by placing the `agent-setup-onPrem.jar` into the bin folder of mule and running the following command. Make sure to replace the token with the one from the console and also substitute the IP/DNS addresses with where your docker is running
+
+[source]
+----
+> java -jar agent-setup.jar -A http://$DOCKER_IP_ADDRESS:8080/hybrid/api/v1 -W "wss://$DOCKER_IP_ADDRESS:8443/mule" -C https://$DOCKER_IP_ADDRESS/accounts -H  7cfdfe00-0677-4510-a2e5-bfb3c3c18458---2 DESIRED_MULE_SERVER_NAME
+----
+
+== Identity Management Configuration
+
+=== OpenAM Configuration (Version 12)
+
+Below is an OpenAM configuration for running docker-compose locally (on https://anypoint.mulesoft.local)
+
+*Identity Federation Service Provider*
+[width="100%",cols="50a,50a",options="header"]
+|===
+|sign on url | https://ec2-52-10-207-37.us-west-2.compute.amazonaws.com:8443/openam/saml2/jsp/idpSSOInit.jsp?spEntityID=anypoint.mulesoft.local&metaAlias=/idp
+|sign out url | https://ec2-52-10-207-37.us-west-2.compute.amazonaws.com:8443/openam/saml2/jsp/spSingleLogoutInit.jsp?binding=urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Redirect&idpEntityID=anypoint.mulesoft.local&metaAlias=/idp&RelayState=http://mulesoft.com
+|===
+
+*Admin Token Provider*
+[width="100%",cols="50a,50a",options="header"]
+|===
+|create url | https://ec2-52-10-207-37.us-west-2.compute.amazonaws.com:8443/openam/json/authenticate
+|username | amadmin
+|password | mulesoft1234
+|===
+
+*OAuth2 Authorization Provider*
+[width="100%",cols="50a,50a",options="header"]
+|===
+|Authorize URL | https://ec2-52-10-207-37.us-west-2.compute.amazonaws.com:8443/openam/oauth2/authorize
+|===
+
+*OAuth2 Token Provider*
+[width="100%",cols="50a,50a",options="header"]
+|===
+|Create URL |https://ec2-52-10-207-37.us-west-2.compute.amazonaws.com:8443/openam/oauth2/access_token
+|===
+
+*OAuth2 Token Validation Provider*
+[width="100%",cols="50a,50a",options="header"]
+|===
+|Validate URL | https://ec2-52-10-207-37.us-west-2.compute.amazonaws.com:8443/openam/oauth2/tokeninfo
+|Username Token Mapping |
+|===
+
+*OAuth2 Client Provider*
+[width="100%",cols="50a,50a",options="header"]
+|===
+|Create Url | https://ec2-52-10-207-37.us-west-2.compute.amazonaws.com:8443/openam/frrest/oauth2/client/?_action=create
+|Delete Url | https://ec2-52-10-207-37.us-west-2.compute.amazonaws.com:8443/openam/frrest/oauth2/client/{{client_id}}
+|Scopes |cn, sn, mail, uid, givenName
+|Default Scopes |cn, sn, mail, uid, givenName
+|===
+
+*SAML 2.0*
+[width="100%",cols="50a,50a",options="header"]
+|===
+|Issuer |test.openam
+|Public key |MIICQDCCAakCBEeNB0swDQYJKoZIhvcNAQEEBQAwZzELMAkGA1UEBhMCVVMxEzARBgNVBAgTCkNhbGlmb3JuaWExFDASBgNVBAcTC1NhbnRhIENsYXJhMQwwCgYDVQQKEwNTdW4xEDAOBgNVBAsTB09wZW5TU08xDTALBgNVBAMTBHRlc3QwHhcNMDgwMTE1MTkxOTM5WhcNMTgwMTEyMTkxOTM5WjBnMQswCQYDVQQGEwJVUzETMBEGA1UECBMKQ2FsaWZvcm5pYTEUMBIGA1UEBxMLU2FudGEgQ2xhcmExDDAKBgNVBAoTA1N1bjEQMA4GA1UECxMHT3BlblNTTzENMAsGA1UEAxMEdGVzdDCBnzANBgkqhkiG9w0BAQEFAAOBjQAwgYkCgYEArSQc/U75GB2AtKhbGS5piiLkmJzqEsp64rDxbMJ+xDrye0EN/q1U5Of+RkDsaN/igkAvV1cuXEgTL6RlafFPcUX7QxDhZBhsYF9pbwtMzi4A4su9hnxIhURebGEmxKW9qJNYJs0Vo5+IgjxuEWnjnnVgHTs1+mq5QYTA7E6ZyL8CAwEAATANBgkqhkiG9w0BAQQFAAOBgQB3Pw/UQzPKTPTYi9upbFXlrAKMwtFf2OW4yvGWWvlcwcNSZJmTJ8ARvVYOMEVNbsT4OFcfu2/PeYoAdiDAcGy/F2Zuj8XJJpuQRSE6PtQqBuDEHjjmOQJ0rV/r8mO1ZCtHRhpZ5zYRjhRC9eCbjx9VrFax0JDC/FfwWigmrW0Y0Q==
+|Audience | anypoint.mulesoft.local
+|Bypass Expiration | unchecked
+|Group Attribute |
+|===
+
+*SSO with an example user*
+
+Go to `https://anypoint.mulesoft.local/accounts/login/<domain>`` (you can find the domain by clicking the ‘gear’ icon, then the *Organization* tab, and then clicking on the master organization).
+Then sign in to OpenAM with your username and password.
+
+=== OpenAM Configuration (Version 11)
+
+Below is OpenAM configuration for running docker-compose locally (on https://anypoint.mulesoft.local)
+
+*Identity Federation Service Provider*
+[width="100%",cols="50a,50a",options="header"]
+|===
+|sign on url | https://ec2-54-149-141-104.us-west-2.compute.amazonaws.com:8443/openam/saml2/jsp/idpSSOInit.jsp?spEntityID=anypoint.mulesoft.local&metaAlias=/idp
+|sign out url | https://ec2-54-149-141-104.us-west-2.compute.amazonaws.com:8443/openam/saml2/jsp/spSingleLogoutInit.jsp?binding=urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Redirect&idpEntityID=anypoint.mulesoft.local&metaAlias=/idp&RelayState=http://mulesoft.com
+|===
+
+*Admin Token Provider*
+[width="100%",cols="50a,50a",options="header"]
+|===
+|create url | https://ec2-54-149-141-104.us-west-2.compute.amazonaws.com:8443/openam/json/authenticate
+|username | amadmin
+|password | mulesoft1234
+|===
+
+*OAuth2 Authorization Provider*
+[width="100%",cols="50a,50a",options="header"]
+|===
+|Authorize URL | https://ec2-54-149-141-104.us-west-2.compute.amazonaws.com:8443/openam/oauth2/authorize
+|===
+
+*OAuth2 Token Provider*
+[width="100%",cols="50a,50a",options="header"]
+|===
+|Create URL | https://ec2-54-149-141-104.us-west-2.compute.amazonaws.com:8443/openam/oauth2/access_token
+|===
+
+*OAuth2 Token Validation Provider*
+[width="100%",cols="50a,50a",options="header"]
+|===
+|Validate URL | https://ec2-54-149-141-104.us-west-2.compute.amazonaws.com:8443/openam/oauth2/tokeninfo
+|Username Token Mapping |
+|===
+
+*OAuth2 Client Provider*
+[width="100%",cols="50a,50a",options="header"]
+|===
+|Create Url | https://ec2-54-149-141-104.us-west-2.compute.amazonaws.com:8443/openam/frrest/oauth2/client/?_action=create
+|Delete Url | https://ec2-54-149-141-104.us-west-2.compute.amazonaws.com:8443/openam/frrest/oauth2/client/{{client_id}}
+|Scopes | cn, sn, mail, uid, givenName
+|Default Scopes | cn, sn, mail, uid, givenName
+|===
+
+*SAML 2.0*
+[width="100%",cols="50a,50a",options="header"]
+|===
+|Issuer | test.openam
+|Public key | MIICQDCCAakCBEeNB0swDQYJKoZIhvcNAQEEBQAwZzELMAkGA1UEBhMCVVMxEzARBgNVBAgTCkNhbGlmb3JuaWExFDASBgNVBAcTC1NhbnRhIENsYXJhMQwwCgYDVQQKEwNTdW4xEDAOBgNVBAsTB09wZW5TU08xDTALBgNVBAMTBHRlc3QwHhcNMDgwMTE1MTkxOTM5WhcNMTgwMTEyMTkxOTM5WjBnMQswCQYDVQQGEwJVUzETMBEGA1UECBMKQ2FsaWZvcm5pYTEUMBIGA1UEBxMLU2FudGEgQ2xhcmExDDAKBgNVBAoTA1N1bjEQMA4GA1UECxMHT3BlblNTTzENMAsGA1UEAxMEdGVzdDCBnzANBgkqhkiG9w0BAQEFAAOBjQAwgYkCgYEArSQc/U75GB2AtKhbGS5piiLkmJzqEsp64rDxbMJ+xDrye0EN/q1U5Of+RkDsaN/igkAvV1cuXEgTL6RlafFPcUX7QxDhZBhsYF9pbwtMzi4A4su9hnxIhURebGEmxKW9qJNYJs0Vo5+IgjxuEWnjnnVgHTs1+mq5QYTA7E6ZyL8CAwEAATANBgkqhkiG9w0BAQQFAAOBgQB3Pw/UQzPKTPTYi9upbFXlrAKMwtFf2OW4yvGWWvlcwcNSZJmTJ8ARvVYOMEVNbsT4OFcfu2/PeYoAdiDAcGy/F2Zuj8XJJpuQRSE6PtQqBuDEHjjmOQJ0rV/r8mO1ZCtHRhpZ5zYRjhRC9eCbjx9VrFax0JDC/FfwWigmrW0Y0Q==
+|Audience | anypoint.mulesoft.local
+|Bypass Expiration | unchecked
+|Group Attribute |
+|===
+
+*SSO with an example user*
+Go to `https://anypoint.mulesoft.local/accounts/login/<domain>`` (you can find the domain by clicking the ‘gear’ icon, then the *Organization* tab, and then clicking on the master organization).
+Then sign in to OpenAM with your username and password.
+
+=== Ping Federate Configuration (Version 6.10)
+
+Below is a PingFederate configuration for running docker-compose locally (on https://anypoint.mulesoft.local)
+
+*Identity Federation Service Provider*
+[width="100%",cols="50a,50a",options="header"]
+|===
+Sign on url | https://ec2-54-69-143-165.us-west-2.compute.amazonaws.com:9031/idp/startSSO.ping?PartnerSpId=anypoint.mulesoft.local
+|Sign out url | https://ec2-54-69-143-165.us-west-2.compute.amazonaws.com:9031/idp/SLO.saml2
+|===
+
+*OAuth2 Authorization Provider*
+[width="100%",cols="50a,50a",options="header"]
+|===
+|Authorize URL | https://ec2-54-69-143-165.us-west-2.compute.amazonaws.com:9031/as/authorization.oauth2
+|===
+
+*OAuth2 Token Provider*
+[width="100%",cols="50a,50a",options="header"]
+|===
+|Create URL | https://ec2-54-69-143-165.us-west-2.compute.amazonaws.com:9031/as/token.oauth2
+|===
+
+*OAuth2 Token Validation Provider*
+[width="100%",cols="50a,50a",options="header"]
+|===
+|Validate URL | https://ec2-54-69-143-165.us-west-2.compute.amazonaws.com:9031/as/token.oauth2
+|Username Token Mapping |
+|===
+
+*OAuth2 Client Provider*
+[width="100%",cols="50a,50a",options="header"]
+|===
+|Create Url | https://ec2-54-69-143-165.us-west-2.compute.amazonaws.com:9031/pf-ws/rest/oauth/clients
+|Delete Url | https://ec2-54-69-143-165.us-west-2.compute.amazonaws.com:9031/pf-ws/rest/oauth/clients/{{client_id}}
+|Username | chris.mordue
+|Password | mule1234
+|===
+
+*SAML 2.0*
+[width="100%",cols="50a,50a",options="header"]
+|===
+|Issuer | dev.mulesoft.com
+|Public key | MIIDBDCCAeygAwIBAgIGAUb+qnaGMA0GCSqGSIb3DQEBBQUAMEMxCzAJBgNVBAYTAlVTMRYwFAYDVQQKEw1Db3JlIFNlcnZpY2VzMRwwGgYDVQQDExNDb3JlIFNlcnZpY2VzIGxvY2FsMB4XDTE0MDcwMzIzNTg0MloXDTE1MDcwMzIzNTg0MlowQzELMAkGA1UEBhMCVVMxFjAUBgNVBAoTDUNvcmUgU2VydmljZXMxHDAaBgNVBAMTE0NvcmUgU2VydmljZXMgbG9jYWwwggEiMA0GCSqGSIb3DQEBAQUAA4IBDwAwggEKAoIBAQCVBYEIUk8bThz3mDUKFUpwntH04Y0ByCa2Owbh5BWZxzKzJ6l4426QOpjsRQwkVfMjF23WchPkLVH1uX3V75JD3I/22700iaDSJsThacIUNJhoGrCrevYBkwd0/LqRkLfRMp+rOKrDcuhU62w6mln5HmQHgTo8po7vL6ydLQ2P/I+uUyhpBiuZRfd/4U56zV9e/3i/tOYhN05bzVEC8veikFg7ZxNP1FlqCUq1sTWHbZHtxOuuiP6J5nKZ2a34P2E+IY3siB8pQN8c0dm0IBEQEX85ZanysLQ7tVzKU8m+YZc7Df39bYWTj78QFagmRmLjd/sGAwOUb6Hy4daPxpE3AgMBAAEwDQYJKoZIhvcNAQEFBQADggEBAA/2PIaF0nJ+268QH9/qQEVT7c32LebEoLssL6uNnYT1VZeUupOOPEtuZAKuWNlTJ8ZSJz4ahJ3oAK94rMwArFWtYvNAdIjIuFhTQ/OikqmjoKtsPadk3hq3TIJb/aYgZTtKzhQJ7m5VLzqnBmVfW75drEnh8w4Qo70gyp67lyWV5MiKdtxHl8ImlDVyKTaOACck5NDQcSvRQEybIqDqhRtnjJQx73n3oNoKNXKpVmBfFyshDxAEK30NGcGysVy+I2myhr3Hsg+ph8w9p0DP7dSVwj+3Mjv93Tk2xfsAex+RIYoQEPf8RV5i0kYWh7dyjH4MRYAWil7JoiFr+1sjumA=
+|Audience | anypoint.mulesoft.local
+|Bypass Expiration | unchecked
+|Group Attribute | memberOf
+|===
+
+*SSO with an example user*
+Go to `https://anypoint.mulesoft.local/accounts/login/<domain>`` (you can find the domain by clicking the ‘gear’ icon, then the *Organization* tab, and then clicking on the master organization).
+Then sign in to OpenAM with your username and password.
+
+=== LDAP Configuration
+
+Below is an LDAP configuration for running docker-compose. You can use any ldap that you want since it is now fully configurable.
+
+*Connection*
+[width="100%",cols="50a,50a",options="header"]
+|===
+|host |  ldap://qa2-ldap-core-services-1671615769.us-east-1.elb.amazonaws.com
+|port | 3389
+|Bind DN | cn=Manager,dc=muleforge,dc=org
+|Password | examplepass
+|connectTimeoutSeconds | 10
+|operationTimeoutMs | 30000
+|===
+
+*Search Bases*
+[width="100%",cols="50a,50a",options="header"]
+|===
+|user | ou=people,dc=muleforge,dc=org
+|group | ou=groups,dc=muleforge,dc=org
+|===
+
+*DNs*
+[width="100%",cols="50a,50a",options="header"]
+|===
+|user | uid={{username}},ou=people,dc=muleforge,dc=org
+|group | cn={{groupName}},ou=groups,dc=muleforge,dc=org
+|===
+
+*Filters*
+[width="100%",cols="50a,50a",options="header"]
+|===
+|userByUsername | (&(objectClass=inetOrgPerson)(uid={{username}}))
+|userByEmail | (&(objectClass=inetOrgPerson)(mail={{email}}))
+|groupByGroupName | (&(objectClass=groupOfUniqueNames)(cn={{groupName}}))
+|groupsByUsername |(&(objectClass=groupOfUniqueNames)(uniqueMember=uid={{username}},ou=people,dc=muleforge,dc=org))
+|===
+
+*User Field Mappings*
+[width="100%",cols="50a,50a",options="header"]
+|===
+|username | uid
+|email | mail
+|firstName | givenName
+|lastName | sn
+|id | entryUUID
+|===
+
+*Group Field Mappings*
+[width="100%",cols="50a,50a",options="header"]
+|===
+|groupName | cn
+|id | entryUUID
+|===
+
+== Installation Notes
+
+Insecure properties/configuration in `authentication-server` that should be customized:
+
+* session.secret (used to sign the session cookie)
+* crypto.password (used to encrypt client’s client_secret)
+* admin.client.client_secret (used for loading seed data)
+* auth.saml_private_pem (used to sign saml LogoutRequest/LogoutResponse for SLO)
+* https.key & https.cert (the server uses this for listening on https)
+
+=== Resetting the Admin User's Password
+
+. Add a password reset token into the database. For simplicity, we’ll set the value of the code to the user’s name. Please change admin to the actual username of the admin user that you created in the setup steps. Execute the following on your database host:
+
++
+[source]
+----
+> docker exec -it $(docker-compose ps -q authdb | head -n 1) psql -Udocker ms_authentication -c "insert into recover_codes (user_id, recover_code) (select id, username from users where username='admin');"
+----
+
+. Enter a new password by navigating to the following link. Please change the host to the hostname you’re using for your installation. Change admin to the username of the admin user that you created in the setup steps. `https://anypoint.mulesoft.local/accounts/#/new-password?code=admin`
+
+=== API Keys
+
+To run the rancher-compose CLI you will need to obtain API keys from the Rancher server.  Click on the icon in the top-right corner of the UI and then select *API & KEYS*.
+
+image:rancher-api-setup.png[api setup]
+
+On the next page, click on *Add API Key*. You will then be able to see your API access key and secret key. Copy these values somewhere safe, keep in mind that you won’t be able to see the API's secret again. After clicking *Close* you will see that you have an active API key that you can use to run rancher-compose. Also take note of the Endpoint URL, which will be of use later as well.
+
+image:rancher-api-secret.png[secret]
+
+image:rancher-api-active.png[active api]
+
+==== Run the platform with rancher-compose
+
+After having registered your API, created API keys, copied the setup files to the host, and downloaded the docker images you are now ready to run rancher-compose to get the platform up and running.
+
+[source]
+----
+> cd anypoint-platform
+> rancher-compose --url $URL --access-key $ACCESS_KEY --secret-key $SECRET_KEY up
+----
+
+[NOTE]
+The URL, access key, and secret key are set to $URL, $ACCESS_KEY, $SECRET_KEY respectively
+
+Go back to the rancher UI and click on the application's link at the top.  You will see that there is a new “Stack” of software called `anypoint-platform` and that the services are starting up.
 
 
 
@@ -276,28 +743,7 @@ Give the newly created stack a name (as a suggestion, name it `anypoint-platform
 
 
 
-
-
-== Setting Up Connectivity for Anypoint Platform
-
-This section details connection parameters and recommended settings for connecting to your Anypoint Platform on-premises Edition installation. You can complete the steps in this section before or after installing Anypoint Platform, or you can use your own custom network configuration.
-
-=== Network Parameters
-
-==== Ports
-
-Anypoint Platform listens for connections on the following ports:
-
-* 80
-* 443
-* 8080
-* 8081
-* 8443
-
-Ports 80 and 443 are for the Web interface; ports 8080 and 8443 are used to register Mule servers. These ports must be open for incoming TCP connections on the machine where your Anypoint Platform installation resides.
-
-Additionally, you must give the Anypoint Platform host IP address a DNS entry for `anypoint.mulesoft.local`, which is the default domain name for the installation (this can be changed if desired).
-
+////
 === Host Name (Running Natively)
 
 If you are running Docker natively, you will connect to Anypoint Platform via `localhost`. You do need to ensure that the Anypoint Platform ports are open, and that client possess the Anypoint Platform host's IP address or network host name as described above.
@@ -383,19 +829,6 @@ On OS X, the hosts file is `/etc/hosts`; on Windows, `C:\Windows\System32\Drive
 [NOTE]
 Modifying your OS's `hosts` file only provides a network address for your virtual machine on the host OS, i.e. the OS where the `hosts` file resides. To allow other clients to connect to your Anypoint Platform installation, you should set up name resolution for your network using DNS.
 
-== Installing Anypoint Platform
-
-Once you have Docker and Compose installed, you need to perform the following steps:
-
-* Download the Anypoint Docker Setup package
-* Login
-* Run the Docker Compose script to start the system
-
-=== Downloading the Anypoint Docker Setup Package
-
-The package is a .zip file that contains all of the configuration and installation scripts needed to run Anypoint Platform.
-
-* Obtain the the installation ZIP file for Anypoint Docker Setup link:http://anypoint-on-prem.s3-website-us-east-1.amazonaws.com/anypoint-platform/anypoint-platform.zip[here]
 
 === Downloading the Anypoint Platform Docker Images
 
@@ -481,16 +914,7 @@ This starts up Docker Compose and the Anypoint Platform containers. Startup can
 
 NOTE: You need to disable SELinux and iptables if they are enabled on your host OS.
 
-=== Populating the Anypoint Platform Database
 
-After startup completes, you need to seed the platform database with an initial set of users.On the Docker machine, open another terminal and run the following command while in the Anypoint Platform folder:
-
-[code, bash, linenums]
-----
-./seed-database.sh
-----
-
-At this point, Anypoint Platform on premise should be up and running.
 
 == Logging Into Anypoint Platform
 
@@ -675,3 +1099,4 @@ Options:
 ----
 
 For further details on running and handling Docker containers, see the http://docs.docker.com[Docker documentation].
+////
