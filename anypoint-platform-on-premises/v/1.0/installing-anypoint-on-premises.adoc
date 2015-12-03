@@ -4,34 +4,46 @@
 
 == Assumptions
 
-This page assumes you have at least a basic understanding of Unix-based systems and networking, and are familiar with the command line.
+This page assumes you have at least a basic understanding of Unix-based systems and networking, and are familiar with the command line. You should also be familiar with link:http://rancher.com/rancher/[Rancher] and link:https://docs.docker.com/installation/[Docker].
+
+
 
 == Overview
 
-Anypoint Platform is available to download and install on premise by obtaining the installation ZIP file from MuleSoft. Currently, Anypoint Platform on-premises Edition is run via link:https://docs.docker.com/installation/[Docker], an open-source virtualization platform. Docker uses _containers_ to wrap applications in a complete filesystem with everything needed to run, including runtime and configuration data. MuleSoft provides Docker images that contain the different components of Anypoint Platform on-premises Edition – complete with configuration – which you can run on Docker.
+Anypoint Platform is available to download and install on premise by obtaining the installation ZIP file from MuleSoft. Currently, Anypoint Platform on-premises Edition is run via link:https://docs.docker.com/installation/[Docker], an open-source virtualization platform, and link:http://rancher.com/rancher/[Rancher] is also used to run Docker containers in production. Docker uses _containers_ to wrap applications in a complete filesystem with everything needed to run, including runtime and configuration data. MuleSoft provides Docker images that contain the different components of Anypoint Platform on-premises Edition – complete with configuration – which you can run on Docker.
 
 Docker runs natively on Linux, but you can use it on OS X and Windows via a Linux virtual machine. You can create your own virtual machine with a Linux distribution supported by Docker, or download and use Docker Toolbox, which contains both Docker Machine and Docker Compose. Docker Machine works as a wrapper around a virtual Linux machine on which Docker runs.
 
 This document contains a brief section to provide orientation on installing Docker on your operating system, and complete instructions for downloading and running the Anypoint Platform on your Docker container.
 
+With Rancher you have the ability to run as many copies of each stateless service as you want and Rancher will automatically balance them between registered hosts. That being said, you will only want to have 1 instance of the singleton services (databases, objectstore, mcm).  For example, if you have 3 hosts registered and you want to run 2 copies of each service, then Rancher will automatically determine which hosts should run each service.
+
+image:rancher-struct.png[rancher struct]
+
+
 === System Requirements
 
-[cols="2*a"]
-|===
-.2+|Operating system
-|RHEL 7.1 or greater
-|CentOS 7.1 or greater
-.2+|Storage
-|20 GB for `var/lib/docker`
-|1 GB for home directory
-.2+|Docker
-|Docker engine 1.6.2 or later
-|Docker Compose 1.3.1 or later
-.2+|Identity management provider
-|OpenAM 11.0 or later
-|LDAP v3
-|Network ports|80, 8080, 8081, 443, 8443
-|===
+*Disk space*: > 30GB free disk space on every host that will run MuleSoft software
+
+*OS Requirements*: Ubuntu is recommended, as it has been tested extensively. Redhat and CentOS have not been tested yet, but are believed to work as well.
+
+*Server vs Agent Hosts*: In theory you can run the Rancher Server, Rancher Agent, and all MuleSoft images on the same machine.  However, we have run into some issues such as port conflicts, exceeding the number of AUFS mounted layers, etc.  To be safe we recommend installing the Rancher Server on one host and then the Rancher Agent and MuleSoft images on other hosts.
+
+*Ports*: Rancher and the MuleSoft software make use of the following ports, so verify that they are open:
+
+* *UDP*: 500, 4500
+* *TCP*: 80, 443, 8080, 8443
+
+*You will need to install the following components on each host*:
+
+* docker engine
+* docker-compose
+* rancher-compose (cli for working with rancher tools)
+
+[WARNING]
+You need to have Docker version 1.8.x. Docker 1.9.X isn't currently compatible with this installation.
+
+Follow the docker installation instructions that are appropriate for your system.   https://docs.docker.com/installation/
 
 === Architecture of Anypoint Platform on Docker
 
@@ -53,7 +65,7 @@ To run Anypoint Platform on premise, you need to:
 
 These steps are detailed below.
 
-== Downloading and Installing Docker
+== Installing Docker and Rancher
 
 link:http://www.docker.com[Docker] runs natively on Linux, including Debian, Ubuntu, Red Hat, CentOS, Oracle and others.
 
@@ -80,6 +92,191 @@ chmod +x /usr/local/bin/docker-compose
 ----
 
 The above commands download Docker Compose to `/usr/local/bin`, then make the `docker-compose` binary executable.
+
+[TIP]
+====
+If you are installing onto an Ubuntu host copy/paste the following into your terminal to install docker, docker-compose, and give docker privileges to the base ubuntu user:
+
+----
+sudo apt-get update
+curl -sSL https://get.docker.com/ | sh
+sudo usermod -aG docker ubuntu
+sudo su
+curl -L https://github.com/docker/compose/releases/download/1.4.2/docker-compose-`uname -s`-`uname -m` > /usr/local/bin/docker-compose
+chmod +x /usr/local/bin/docker-compose
+exit
+exit
+# Login again and test docker works on your host with
+docker run --rm -it hello-world
+----
+====
+
+=== Installing Rancher
+
+Normally rancher-compose CLI is downloaded from the UI so that it matches the version that your server is running.  However, for your convenience we have made the CLI available for download link:https://drive.google.com/a/mulesoft.com/file/d/0B7Zu0XrNc9M4c1pfNGxUVm5IMlE/view?usp=sharing[here].  Copy it to your host machines and then add it to your PATH so that you can call it from the terminal.  Here’s a potential way to do it.
+
+[source]
+----
+> sudo cp rancher-compose /usr/bin/.
+----
+
+The following steps refer to items that are also explained in the link:http://docs.rancher.com/rancher/quick-start-guide/[Rancher Reference Quick Start Guide]..
+
+==== Rancher Server Installation:
+
+Run the rancher server on the machine you designate to host it.  It occupies a single docker container.
+
+[source]
+----
+> sudo docker run -d --restart=always -p 9999:8080 rancher/server
+----
+
+After a few minutes, the server will be running and will allow you to access the UI on your browser of choice vía HTTP:  `http://$SERVER_IP:9999`
+
+image:
+
+You now have the server up and running with the Rancher UI. From here onwards, this tutorial will make use of the Rancher UI instead of the terminal to manage the installation.
+
+==== Register a host with the rancher server:
+
+Follow the Docker instructions above on a separate machine. This machine will be used as a host to run MuleSoft software. Open a terminal on this machine.
+
+Back on the first machine, where you installed Rancher, from the UI top nav bar click on *INFRASTRUCTURE* and then *HOSTS*.  You will see a screen that shows all registered host machines. At this point, you won’t see any registered machines.
+
+image
+
+Click on the ADD HOST button to add a host. On the next page, the Rancher UI will require that you provide a base URL that the hosts should use to connect to the server.  By default it will use the URL that your browser is currently at, which should be fine, so hit *Save* to move on to the next page.
+
+image
+
+There are several ways to auto-provision hosts from different cloud providers.  We will not use any of these since you have already provisioned your own server. Click on the CUSTOM icon which will give you a command to run on the host machine. Copy and paste this into your terminal to register the host with the server (this will run the Rancher agent Docker image on the host machine).  Click on *close*. Wait for a minute and go back to the host's screen and you will see that the host has been registered with the server and that it’s ready to receive commands.
+
+image
+
+image
+
+One of the hosts you are adding to your cluster needs to be designated as the “database” host, which will ensure correct container placement for failover scenarios. Pick your designated host and open its dropdown menu by clicking on the down arrow, select “Edit” and add the following label:
+
+[source]
+----
+“database” = “true”
+----
+
+image
+
+image
+
+You can verify that the host now displays this label when viewed on the Hosts screen.
+
+[NOTE]
+Make sure that exactly *one* single host has this label attached.
+
+image
+
+== Docker Registry Setup
+
+////
+Although docker registries can be manually added on every host which is managed by Rancher, it’s better to add “docker.mulesoft.com” to the platform to make sure this registry exists on all nodes under Rancher control.  This way Rancher will be able to pull MuleSoft images by itself on any host without user intervention.
+
+. In the Rancher UI, click on the icon at the top right corner of the UI and then select *Registries*
+
++
+image
+
+. Create a new “custom” registry.  You should enter Anypoint credentials that have proper permissions to pull images.
+
++
+image
+
+. Verify that the new registry you created is now active
+
++
+image
+////
+
+To add docker registries on every host, login in each host and pull the MuleSoft images using the command line. The script `pull-docker-images.sh` included in the distribution helps to pull all images.
+
+[NOTE]
+====
+We use our own internal docker registry. To download these images you will need to have the appropriate permissions added to your Anypoint account.  If you do not already have these, for now you can add your Anypoint username to link:https://docs.google.com/a/mulesoft.com/spreadsheets/d/1IH67o7XmNY9PDjySqYo5ie8GIbLVdaygKRs3NvdV35Y/edit?usp=sharing[this spreadsheet] along with the list of permissions that you need (download ARM or download full platform or both).  You will be notified when you have been given access.
+====
+
+=== OPTIONAL: Regenerate certificates, keys and keystores in the platform config
+
+Included with the platform installation and configuration zip package (or github repo) is a default sent of encryption keys, self-signed certificates, and keystores that are used by the platform for security purposes such as signing certificates during mule/gateway runtime registration with the runtime manager.  Out of the box, the platform works fine using these default files, but if you wish to replace them with newly generated ones for increased security we have included a script to automate this process.
+
+[source]
+----
+> cd anypoint-platform
+> keystore-generation.sh
+----
+
+Follow the on-screen prompts.  Notice that once executed a new file will be generated from this process named `truststore.jks)`.  This file is required by link:/mule-agent/v/1.1.1/index[the Mule Agent] for all runtimes you wish to register to the console because the agent uses 2-way SSL validation.  Before registering a runtime, you must copy this file to the `conf/` folder of that runtime.
+
+
+=== Copy platform config files to `/opt/config`
+
+The Anypoint platform configuration files must be in a predictable location on each host machine because Rancher dynamically launches services on any available host.  This means that it won’t have the benefit of finding config files from a current working directory the same way docker-compose would.  `/opt/config` has been chosen as the default directory to store platform configuration files, so what you need to do is download the link:[I STILL NEED THE FILE TO PUT HERE] and copy the config directory into the `/opt` folder.  Repeat this procedure on every host you register to Rancher.
+
+[source]
+----
+> cd anypoint-platform
+> sudo cp -r config /opt/.
+----
+
+////
+=== Create directories for databases
+
+To recover Postgres databases in case of crash or failure, 2 things are necessary
+* a logical dump of a database
+* all WAL segments between the time of the dump and the crash moment
+
+To simplify backup and restore process we suggest using an external storage mounted to /opt/dbs on all hosts where DB container can run. Please use the following command to create directories for all DB instances:
+
+[source]
+----
+for i in /opt/dbs/objectstore /opt/dbs/auth /opt/dbs/apiplatform /opt/dbs/hybrid /opt/dbs/exchange /opt/dbs/ramlmocking /opt/dbs/backups ; do mkdir -p $i ; done
+----
+////
+
+=== Upload SSL certificate
+
+The Anypoint platform creates a load balancer which makes SSL termination. By default, the Rancher  configuration files rely on an existing SSL certificate named “mulesoft-demo”. To upload its key and certificate, on Rancher open INFRASTRUCTURE -> CERTIFICATES and click the *Add Certificate* button. Then upload or insert the key and certificates.
+
+image
+
+[NOTE]
+====
+If the name of your certificate is not “mulesoft-demo”, you need to modify the following line in rancher-compose.yml file:
+
+[source, yaml]
+----
+nginx-ssl-lb:
+  scale: 1
+  default_cert: mulesoft-demo
+----
+
+====
+
+image
+
+== Run the platform via the Rancher UI
+
+There are two ways of running the platform using Rancher. One of them is to use a command-line utility called `rancher-compose` (that is very similar to `docker-compose`, in case you have used it before).  This method works, but requires more steps and is more error-prone than the alternative. We recommend the second way of launching the platform, which relies entirely on the Rancher UI.  To start, click on the *Applications* link on the top nav bar and then click the *Add Stack* button.
+
+image
+
+Give the newly created stack a name (as a suggestion, name it `anypoint-platform`) and load the `docker-compose.yml` and `rancher-compose.yml` files you obtained from the zip (or github repo).  It’s the equivalent of “rancher-compose create” command.
+
+
+
+
+
+
+
+
+
+
 
 == Setting Up Connectivity for Anypoint Platform
 
