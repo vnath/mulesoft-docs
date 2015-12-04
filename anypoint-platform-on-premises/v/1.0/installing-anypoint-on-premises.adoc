@@ -122,7 +122,7 @@ docker run --rm -it hello-world
 
 === Installing Rancher
 
-Normally rancher-compose CLI is downloaded from the UI so that it matches the version that your server is running.  However, for your convenience we have made the CLI available for download link:https://drive.google.com/a/mulesoft.com/file/d/0B7Zu0XrNc9M4c1pfNGxUVm5IMlE/view?usp=sharing[here].  Copy it to your host machines and then add it to your PATH so that you can call it from the terminal.  Here’s a potential way to do it.
+Normally rancher-compose CLI is downloaded from the UI so that it matches the version that your server is running.  However, for your convenience we have made the CLI available for download link:_attachments/rancher-compose[here].  Copy it to your host machines and then add it to your PATH so that you can call it from the terminal.  Here’s a potential way to do it.
 
 [source]
 ----
@@ -450,7 +450,7 @@ Add a server by placing the `agent-setup-onPrem.jar` into the bin folder of mule
 
 [source]
 ----
-> java -jar agent-setup.jar -A http://$DOCKER_IP_ADDRESS:8080/hybrid/api/v1 -W "wss://$DOCKER_IP_ADDRESS:8443/mule" -C https://$DOCKER_IP_ADDRESS/accounts -H  7cfdfe00-0677-4510-a2e5-bfb3c3c18458---2 DESIRED_MULE_SERVER_NAME
+> java -jar agent-setup.jar -A http://$DOCKER_IP_ADDRESS:8080/hybrid/api/v1 -W "wss://$DOCKER_IP_ADDRESS:8443/mule" -C https://$DOCKER_IP_ADDRESS/accounts -H  11111111-1111-1111-1111-111111111111---1 DESIRED_MULE_SERVER_NAME
 ----
 
 == Identity Management Configuration
@@ -470,8 +470,8 @@ Below is an OpenAM configuration for running docker-compose locally (on https://
 [width="100%",cols="50a,50a",options="header"]
 |===
 |create url | https://ec2-52-10-207-37.us-west-2.compute.amazonaws.com:8443/openam/json/authenticate
-|username | amadmin
-|password | mulesoft1234
+|username | admin
+|password | 11111
 |===
 
 *OAuth2 Authorization Provider*
@@ -506,7 +506,7 @@ Below is an OpenAM configuration for running docker-compose locally (on https://
 [width="100%",cols="50a,50a",options="header"]
 |===
 |Issuer |test.openam
-|Public key |MIICQDCCAakCBEeNB0swDQYJKoZIhvcNAQEEBQAwZzELMAkGA1UEBhMCVVMxEzARBgNVBAgTCkNhbGlmb3JuaWExFDASBgNVBAcTC1NhbnRhIENsYXJhMQwwCgYDVQQKEwNTdW4xEDAOBgNVBAsTB09wZW5TU08xDTALBgNVBAMTBHRlc3QwHhcNMDgwMTE1MTkxOTM5WhcNMTgwMTEyMTkxOTM5WjBnMQswCQYDVQQGEwJVUzETMBEGA1UECBMKQ2FsaWZvcm5pYTEUMBIGA1UEBxMLU2FudGEgQ2xhcmExDDAKBgNVBAoTA1N1bjEQMA4GA1UECxMHT3BlblNTTzENMAsGA1UEAxMEdGVzdDCBnzANBgkqhkiG9w0BAQEFAAOBjQAwgYkCgYEArSQc/U75GB2AtKhbGS5piiLkmJzqEsp64rDxbMJ+xDrye0EN/q1U5Of+RkDsaN/igkAvV1cuXEgTL6RlafFPcUX7QxDhZBhsYF9pbwtMzi4A4su9hnxIhURebGEmxKW9qJNYJs0Vo5+IgjxuEWnjnnVgHTs1+mq5QYTA7E6ZyL8CAwEAATANBgkqhkiG9w0BAQQFAAOBgQB3Pw/UQzPKTPTYi9upbFXlrAKMwtFf2OW4yvGWWvlcwcNSZJmTJ8ARvVYOMEVNbsT4OFcfu2/PeYoAdiDAcGy/F2Zuj8XJJpuQRSE6PtQqBuDEHjjmOQJ0rV/r8mO1ZCtHRhpZ5zYRjhRC9eCbjx9VrFax0JDC/FfwWigmrW0Y0Q==
+|Public key |asdfasdfasdfasdfasdfasdfasfasdfasdfasdfsfas
 |Audience | anypoint.mulesoft.local
 |Bypass Expiration | unchecked
 |Group Attribute |
@@ -532,8 +532,8 @@ Below is OpenAM configuration for running docker-compose locally (on https://any
 [width="100%",cols="50a,50a",options="header"]
 |===
 |create url | https://ec2-54-149-141-104.us-west-2.compute.amazonaws.com:8443/openam/json/authenticate
-|username | amadmin
-|password | mulesoft1234
+|username | admin
+|password | 111111
 |===
 
 *OAuth2 Authorization Provider*
@@ -568,7 +568,7 @@ Below is OpenAM configuration for running docker-compose locally (on https://any
 [width="100%",cols="50a,50a",options="header"]
 |===
 |Issuer | test.openam
-|Public key | MIICQDCCAakCBEeNB0swDQYJKoZIhvcNAQEEBQAwZzELMAkGA1UEBhMCVVMxEzARBgNVBAgTCkNhbGlmb3JuaWExFDASBgNVBAcTC1NhbnRhIENsYXJhMQwwCgYDVQQKEwNTdW4xEDAOBgNVBAsTB09wZW5TU08xDTALBgNVBAMTBHRlc3QwHhcNMDgwMTE1MTkxOTM5WhcNMTgwMTEyMTkxOTM5WjBnMQswCQYDVQQGEwJVUzETMBEGA1UECBMKQ2FsaWZvcm5pYTEUMBIGA1UEBxMLU2FudGEgQ2xhcmExDDAKBgNVBAoTA1N1bjEQMA4GA1UECxMHT3BlblNTTzENMAsGA1UEAxMEdGVzdDCBnzANBgkqhkiG9w0BAQEFAAOBjQAwgYkCgYEArSQc/U75GB2AtKhbGS5piiLkmJzqEsp64rDxbMJ+xDrye0EN/q1U5Of+RkDsaN/igkAvV1cuXEgTL6RlafFPcUX7QxDhZBhsYF9pbwtMzi4A4su9hnxIhURebGEmxKW9qJNYJs0Vo5+IgjxuEWnjnnVgHTs1+mq5QYTA7E6ZyL8CAwEAATANBgkqhkiG9w0BAQQFAAOBgQB3Pw/UQzPKTPTYi9upbFXlrAKMwtFf2OW4yvGWWvlcwcNSZJmTJ8ARvVYOMEVNbsT4OFcfu2/PeYoAdiDAcGy/F2Zuj8XJJpuQRSE6PtQqBuDEHjjmOQJ0rV/r8mO1ZCtHRhpZ5zYRjhRC9eCbjx9VrFax0JDC/FfwWigmrW0Y0Q==
+|Public key | asdfasdfasdfasdfasdfasdfasfasdfasdfasdfsfas
 |Audience | anypoint.mulesoft.local
 |Bypass Expiration | unchecked
 |Group Attribute |
@@ -613,15 +613,15 @@ Sign on url | https://ec2-54-69-143-165.us-west-2.compute.amazonaws.com:9031/idp
 |===
 |Create Url | https://ec2-54-69-143-165.us-west-2.compute.amazonaws.com:9031/pf-ws/rest/oauth/clients
 |Delete Url | https://ec2-54-69-143-165.us-west-2.compute.amazonaws.com:9031/pf-ws/rest/oauth/clients/{{client_id}}
-|Username | chris.mordue
-|Password | mule1234
+|Username | admin
+|Password | 11111
 |===
 
 *SAML 2.0*
 [width="100%",cols="50a,50a",options="header"]
 |===
 |Issuer | dev.mulesoft.com
-|Public key | MIIDBDCCAeygAwIBAgIGAUb+qnaGMA0GCSqGSIb3DQEBBQUAMEMxCzAJBgNVBAYTAlVTMRYwFAYDVQQKEw1Db3JlIFNlcnZpY2VzMRwwGgYDVQQDExNDb3JlIFNlcnZpY2VzIGxvY2FsMB4XDTE0MDcwMzIzNTg0MloXDTE1MDcwMzIzNTg0MlowQzELMAkGA1UEBhMCVVMxFjAUBgNVBAoTDUNvcmUgU2VydmljZXMxHDAaBgNVBAMTE0NvcmUgU2VydmljZXMgbG9jYWwwggEiMA0GCSqGSIb3DQEBAQUAA4IBDwAwggEKAoIBAQCVBYEIUk8bThz3mDUKFUpwntH04Y0ByCa2Owbh5BWZxzKzJ6l4426QOpjsRQwkVfMjF23WchPkLVH1uX3V75JD3I/22700iaDSJsThacIUNJhoGrCrevYBkwd0/LqRkLfRMp+rOKrDcuhU62w6mln5HmQHgTo8po7vL6ydLQ2P/I+uUyhpBiuZRfd/4U56zV9e/3i/tOYhN05bzVEC8veikFg7ZxNP1FlqCUq1sTWHbZHtxOuuiP6J5nKZ2a34P2E+IY3siB8pQN8c0dm0IBEQEX85ZanysLQ7tVzKU8m+YZc7Df39bYWTj78QFagmRmLjd/sGAwOUb6Hy4daPxpE3AgMBAAEwDQYJKoZIhvcNAQEFBQADggEBAA/2PIaF0nJ+268QH9/qQEVT7c32LebEoLssL6uNnYT1VZeUupOOPEtuZAKuWNlTJ8ZSJz4ahJ3oAK94rMwArFWtYvNAdIjIuFhTQ/OikqmjoKtsPadk3hq3TIJb/aYgZTtKzhQJ7m5VLzqnBmVfW75drEnh8w4Qo70gyp67lyWV5MiKdtxHl8ImlDVyKTaOACck5NDQcSvRQEybIqDqhRtnjJQx73n3oNoKNXKpVmBfFyshDxAEK30NGcGysVy+I2myhr3Hsg+ph8w9p0DP7dSVwj+3Mjv93Tk2xfsAex+RIYoQEPf8RV5i0kYWh7dyjH4MRYAWil7JoiFr+1sjumA=
+|Public key | asdfasdfasdfasdfasdfasdfasfasdfasdfasdfsfas
 |Audience | anypoint.mulesoft.local
 |Bypass Expiration | unchecked
 |Group Attribute | memberOf
