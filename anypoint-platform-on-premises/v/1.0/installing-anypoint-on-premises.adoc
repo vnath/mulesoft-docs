@@ -355,6 +355,16 @@ image:rancher-shell3.png[shell3]
 > npm run gulp -- migrate-latest
 ----
 
+. Repeat the same steps with the *hybrid-rest* service to open a terminal and run this command below to seed it's database.  Do not be alarmed if the service is marked as *degraded* since that just means the database the service uses is not yet ready.
+
++
+[source]
+----
+> /usr/local/bin/migrate.sh
+----
+
+. The last step is to restart the hybrid-rest service after migration so that it can validate the schema on startup and properly initialize itself.  To accomplish this, navigate the rancher ui back to the *hybridrest* service and click the *stop* button at the top to stop this service.  Once the service stops the button will change into a *start* button that you can use to restart the service.  It should come up as green and running.
+
 Congratulations! You have now installed the Anypoint Platform running on top of Docker. You can open the service using your browser (make sure to use HTTPS) and create an organization by going to https://$HOST-IP/accounts/#/setup
 
 === Extending to more than 1 host
