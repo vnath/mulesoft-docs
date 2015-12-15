@@ -198,7 +198,7 @@ Included with both zip files available for download in this document, there's a 
 
 Follow the on-screen prompts.  Notice that once executed a new file will be generated from this process named `truststore.jks)`.  This file is required by link:/mule-agent/v/1.1.1/index[the Mule Agent] for all runtimes you wish to register to the console because the agent uses 2-way SSL validation.  Before registering a runtime, you must copy this file to the `conf/` folder of that runtime.
 
-
+////
 ==== Copy platform config files to `/opt/config`
 
 The Anypoint platform configuration files must be in a predictable location on each host machine because Rancher dynamically launches services on any available host.  This means that it won’t have the benefit of finding config files from a current working directory the same way docker-compose would.  `/opt/config` has been chosen as the default directory to store platform configuration files, so what you need to do is download the link:[I STILL NEED THE FILE TO PUT HERE] and copy the config directory into the `/opt` folder.  Repeat this procedure on every host you register to Rancher.
@@ -208,7 +208,7 @@ The Anypoint platform configuration files must be in a predictable location on e
 > cd anypoint-platform
 > sudo cp -r config /opt/.
 ----
-
+////
 ////
 === Create directories for databases
 
@@ -263,7 +263,7 @@ It will take several minutes for the services to come online.  The icons will sl
 
 image:rancher-start-services2.png[start services 2]
 
-Once the images are all active, your Stacks screen will look like in the image below:
+Once the images are all active (except for hybridrest that will remain degraded until we run the DB scripts), your Stacks screen will look like in the image below:
 
 image:rancher-start-services3.png[start services 3]
 
@@ -343,6 +343,7 @@ image:rancher-shell3.png[shell3]
 
 Congratulations! You have now installed the Anypoint Platform running on top of Docker. You can open the service using your browser (make sure to use HTTPS) and create an organization by going to https://$HOST-IP/accounts/#/setup
 
+
 === Extending to more than 1 host
 
 Rancher allows you to distribute containers between multiple hosts and make it absolutely transparent for clients. Scaling is quite simple:
@@ -361,11 +362,8 @@ If you have only one host, scaling is still technically possible, but not very p
 +
 [NOTE]
 ====
-Currently not all services can be scaled. Below is a list of services you can easily multiply:
+Currently Databases cannot be scaled, but other services should be resilent to any failure or Scale up to handle a bigger load. 
 
-* apiplatform
-* authentication
-* nginx
 ====
 
 . If  you need to scale the “authentication” service, as an example, you can either
