@@ -52,7 +52,7 @@ Let’s take a look at this diagram, a conceptual framework you can use to orien
 
 [diagram]
 
-*API Designer*, accessible from the browser, or *APIkit*, available within Studio. Via the use of proxies, the Anypoint Platform can manage APIs that are defined in any format. We promote API development following a model where APIs are segmented into three logical layers on your organization:
+*API Designer*, accessible from the browser, or *APIkit*, available within Studio. Via the use of proxies, the Anypoint Platform can manage APIs, which can be defined in any format. We promote API development following an API model where APIs are segmented into three logical layers of your organization:
 
 * System
 * Process
