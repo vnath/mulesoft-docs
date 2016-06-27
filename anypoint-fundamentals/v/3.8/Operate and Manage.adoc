@@ -132,12 +132,13 @@ link:/anypoint-platform-for-apis[API Manager], formerly known as *Anypoint Platf
 
 You can either register a Mule application by imbuing it with link:/anypoint-platform-for-apis/api-auto-discovery[auto-discovery parameters], or taking an existing legacy API and triggering creation of a Mule proxy to govern and monitor the API. Either case results in registration of your API with your API Manager.
 
-Once an API is registered, you can easily apply governance policies to it via the web UI, such as *throttling* or *API whitelisting*. Apply such policies after providing parameter values, and then simply by clicking the *Activate* button. You can also generate your own custom policies if you require something that isn't covered by the lengthy list of pre-built policies.
+Once an API is registered, you can easily link:/anypoint-platform-for-apis/applying-runtime-policies[*apply governance policies*] to it via the web UI, such as *throttling* or *API whitelisting*. Apply such policies after providing parameter values, and then simply by clicking the *Activate* button. You can also generate your own custom policies if you require something that isn't covered by the lengthy list of pre-built policies.
 
 With your API registered, the Anypoint Platform will start link:/anypoint-platform-for-apis/analytics[tracking analytics] about API usage and performance.
 
-At that point you could create an API portal, where users of your API can browse interactive API documentation that is automatically generated from your API's RAML definition file. You can expose other content from this API Portal as well.
+At that point you could create an link:/anypoint-platform-for-apis/engaging-users-of-your-api[*API portal*], where users of your API can browse interactive API documentation that is automatically generated from your API's RAML definition file. You can expose other content from this API Portal as well.
 
+[TIP]
 The platform supports maintenance of multiple versions of an API, each with its independent set of policies, analytics and portal.
 
 ==== Managing a non-Mule Application
@@ -160,10 +161,11 @@ Create custom roles for users of Runtime Manager and grant custom permissions to
 
 image:mmc.png[mmc]
 
-MMC provides robust runtime management capabilities for on-premises deployments.
+MMC provides robust runtime management capabilities for on-premises deployments, including monitoring features, email alerts, logs, etc.
 
-You can monitor Mule, get email alerts and more.
 
+[NOTE]
+MMC is pending full replacement by Runtime Manager, and hence will eventually be deprecated. There is a migration tool for migrating your MMC deployments to Runtime Manager.
 
 == See Also
 
