@@ -1,24 +1,26 @@
-= Anypoint Analytics Consumer API
-:keywords: analytics, consumer api, consumer, api
+= Anypoint Analytics - API Consumer
+:keywords: analytics, api consumer, consumer, api
 
-The Anypoint Analytics Consumer API lets you ensure that the performance of your APIs meets the targets of your Service Level Access (SLA) tiers. The Consumer API measures the number of requests for an API, performance, and the number of blocked requests.
+The API Consumer Analytics provides the ability to an application owner to view the API metrics pertaining to the API calls made by the application. The API metrics include the number of requests made for the API, the average latency in servicing the request, and the blocked and successful call metrics. The application owner can then compare the API metrics to the Service Level Access (SLA) tiers and take actions to proactively manage their applications. 
 
-The use cases for the Consumer API are:
+There are many use cases for the API Consumer analytics. Some of them are listed here :
 
 * *SLA Performance* - Ensuring that your APIs are performing in line with the SLA tier approved for an API.
 * *Troubleshooting* - Determining which APIs are receiving more or fewer requests, and which APIs are being blocked (where requests fail with a 4xx or 5xx HTTP error code, such as a 404 or 500).
+* *Isolate Performance issues* - Determining which APIs take longer time in servicing requests.
+
 
 For more information on SLA tiers, see the  link:/api-manager/defining-sla-tiers[Defining SLA Tiers] and link:/api-manager/tutorial-manage-an-api#adding-an-sla-tier[Adding an SLA Tier] documents.
 
-NOTE: The Consumer API is essentially a visual indicator where you can view API performance over a duration. The performance data is not logged, and no notifications are generated if the performance falls off or the number of blocked requests increase. Administrators should regularly review the Consumer API screens to ensure APIs are performing as expected.
+NOTE: The API Consumer analytics is essentially a visual indicator where you can view API performance over a duration. The performance data is not logged, and no notifications are generated if the performance falls off or the number of blocked requests increase.
 
 == Accessing the Consumer API
 
-To access the consumer API, ensure that you have previously created one or more applications that you wish to monitor. Each application needs to have at least one or more APIs for how users access your application.
+To access the API consumer analytics for an API used by an application, ensure that you have previously created one or more applications or have access to an application that you wish to monitor. Each application needs to have access to invoke at least one or more APIs that are published on the developer portal.
 
-You can access the Consumer API using link:https://anypoint.mulesoft.com/#/signin[Anypoint Platform] > *API Manager* > *Developer portal* > *My applications*.
+You can access the API Consumer Analytics using link:https://anypoint.mulesoft.com/#/signin[Anypoint Platform] > *API Manager* > *Developer portal* > *My applications*.
 
-When you view the Consumer API screens, each differs by the information in the detail information at the right of the screen for an API entry. You can move the cursor over the Requests, Performance, or Blocked tab data to view breakouts over the duration range. A zero value in the breakouts indicates that not enough data was available to provide meaningful information.
+When you view the API Consumer analytics screens in the details pane at the right end of the screen, there are three different metrics available. You can move the cursor over the Requests, Performance, or Blocked tab data to view breakouts over the duration range. A zero value in the breakouts indicates that not enough data was available to provide meaningful information.
 
 image:consumer-api-detail-tabs.png[consumer-api-detail-tabs]
 
